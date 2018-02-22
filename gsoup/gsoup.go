@@ -3,10 +3,8 @@ package gsoup
 import (
 	"bytes"
 	"io"
-
-	"strings"
-
 	"log"
+	"strings"
 
 	"golang.org/x/net/html"
 )

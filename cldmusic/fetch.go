@@ -13,6 +13,8 @@ import (
 
 	"strings"
 
+	"strconv"
+
 	"github.com/marlondu/gtool/dson"
 )
 
@@ -78,15 +80,11 @@ type Video struct {
 	Title   string   `json:"title"`
 	Id      string   `json:"id"`
 	Artists []string `json:"artists"`
-	Type    int      `json:"type"`
+	Type    string   `json:"type"`
 }
 
 func (v *Video) String() string {
-	tp := "video"
-	if v.Type == 0 {
-		tp = "mv"
-	}
-	return fmt.Sprintf(" [%s] [%s] [%s] [%s]", v.Title, v.Id, tp, strings.Join(v.Artists, ","))
+	return fmt.Sprintf(" [%s] [%s] [%s] [%s]", v.Title, v.Id, v.Type, strings.Join(v.Artists, ","))
 }
 
 func Convert2Song(content string) []Song {
@@ -126,6 +124,10 @@ func Convert2Video(content string) []Video {
 		id := v.GetString("vid")
 		artists := v.GetArray("creator")
 		tp := v.GetInt("type")
+		tpVal := "mv"
+		if tp == VIDEO_TYPE {
+			tpVal = "video"
+		}
 		var ars = make([]string, 0, 2)
 		for j := 0; j < artists.Size(); j++ {
 			ar := artists.GetObject(j)
@@ -135,7 +137,7 @@ func Convert2Video(content string) []Video {
 			Title:   title,
 			Id:      id,
 			Artists: ars,
-			Type:    tp,
+			Type:    tpVal,
 		}
 		results[i] = video
 	}
@@ -166,11 +168,29 @@ func Convert2MV(content string) []MV {
 	return results
 }
 
-func Search(word string, tp int) (string, error) {
+func Search(word string, tp int) {
 	param :=
 		`{"hlpretag":"<span class=\"s-fc7\">","hlposttag":"</span>","s":"%s","type":"%d","offset":"0","total":"true","limit":"30","csrf_token":""}`
 	param = fmt.Sprintf(param, word, tp)
-	return fetch(param, urlSea)
+	content, err := fetch(param, urlSea)
+	if err != nil {
+		log.Panic(err)
+	}
+	switch tp {
+	case VIDEO:
+		videos := Convert2Video(content)
+		prettyPrintVideo(videos)
+	case MV_:
+		mvs := Convert2MV(content)
+		prettyPrintMV(mvs)
+	case SONG:
+		songs := Convert2Song(content)
+		prettyPrintSong(songs)
+	default:
+		fmt.Println("type value error")
+		fmt.Println(content)
+	}
+	return
 }
 
 func fetch(param string, uri string) (string, error) {
@@ -226,4 +246,136 @@ func UnPKCS5Padding(src []byte) []byte {
 	length := len(src)
 	unPadding := int(src[length-1])
 	return src[:(length - unPadding)]
+}
+
+func prettyPrintMV(list []MV) {
+	// 每列的最大长度
+	columnsWidth := []int{2, 4, 4}
+	data := make([][]string, 0)
+	title := []string{"ID", "名称", "歌手"}
+	data = append(data, title)
+	for _, v := range list {
+		col := make([]string, 4)
+		col[0] = strconv.Itoa(v.Id)
+		col[1] = v.Name
+		col[2] = strings.Join(v.Artists, ",")
+		//col[3] = strconv.Itoa(v.Type)
+		data = append(data, col)
+		if strLen(col[0]) > columnsWidth[0] {
+			columnsWidth[0] = strLen(col[0]) + 2
+		}
+		if strLen(col[1]) > columnsWidth[1] {
+			columnsWidth[1] = strLen(col[1]) + 2
+		}
+		if strLen(col[2]) > columnsWidth[2] {
+			columnsWidth[2] = strLen(col[2]) + 2
+		}
+		//if strLen(col[3]) > columnsWidth[3] {
+		//	columnsWidth[3] = strLen(col[3]) + 2
+		//}
+	}
+	println(columnsWidth)
+	for i := 0; i < len(list); i++ {
+		printlnWithValue(columnsWidth, data[i])
+		println(columnsWidth)
+	}
+}
+
+func prettyPrintVideo(list []Video) {
+	// 每列的最大长度
+	columnsWidth := []int{2, 4, 4, 4}
+	data := make([][]string, 0)
+	title := []string{"ID", "名称", "歌手", "类型"}
+	data = append(data, title)
+	for _, v := range list {
+		col := make([]string, 4)
+		col[0] = v.Id
+		col[1] = v.Title
+		col[2] = strings.Join(v.Artists, ",")
+		col[3] = v.Type
+		data = append(data, col)
+		if strLen(col[0]) > columnsWidth[0] {
+			columnsWidth[0] = strLen(col[0]) + 2
+		}
+		if strLen(col[1]) > columnsWidth[1] {
+			columnsWidth[1] = strLen(col[1]) + 2
+		}
+		if strLen(col[2]) > columnsWidth[2] {
+			columnsWidth[2] = strLen(col[2]) + 2
+		}
+		if strLen(col[3]) > columnsWidth[3] {
+			columnsWidth[3] = strLen(col[3]) + 2
+		}
+	}
+	println(columnsWidth)
+	for i := 0; i < len(list); i++ {
+		printlnWithValue(columnsWidth, data[i])
+		println(columnsWidth)
+	}
+}
+
+func prettyPrintSong(list []Song) {
+	// 每列的最大长度
+	columnsWidth := []int{2, 4, 4, 4}
+	data := make([][]string, 0)
+	title := []string{"ID", "名称", "歌手", "专辑"}
+	data = append(data, title)
+	for _, v := range list {
+		col := make([]string, 4)
+		col[0] = strconv.Itoa(v.Id)
+		col[1] = v.Name
+		col[2] = strings.Join(v.Artists, ",")
+		col[3] = v.Album
+		data = append(data, col)
+		if strLen(col[0]) > columnsWidth[0] {
+			columnsWidth[0] = strLen(col[0]) + 2
+		}
+		if strLen(col[1]) > columnsWidth[1] {
+			columnsWidth[1] = strLen(col[1]) + 2
+		}
+		if strLen(col[2]) > columnsWidth[2] {
+			columnsWidth[2] = strLen(col[2]) + 2
+		}
+		if strLen(col[3]) > columnsWidth[3] {
+			columnsWidth[3] = strLen(col[3]) + 2
+		}
+	}
+	println(columnsWidth)
+	for i := 0; i < len(list); i++ {
+		printlnWithValue(columnsWidth, data[i])
+		println(columnsWidth)
+	}
+}
+
+func println(colsWidth []int) {
+	for i := 0; i < len(colsWidth); i++ {
+		fmt.Print("+")
+		for j := 0; j < colsWidth[i]; j++ {
+			fmt.Print("-")
+		}
+	}
+	fmt.Print("+\n")
+}
+
+func printlnWithValue(colsWidth []int, values []string) {
+	for i := 0; i < len(colsWidth); i++ {
+		fmt.Print("|")
+		valLen := strLen(values[i])
+		rightWhites := colsWidth[i] - valLen
+		fmt.Print(values[i])
+		fmt.Print(strings.Repeat(" ", rightWhites))
+	}
+	fmt.Print("|\n")
+}
+
+func strLen(s string) int {
+	l := 0
+	for _, c := range s {
+		if c < 0xFF {
+			l += 1
+		} else {
+			l += 2
+		}
+	}
+	return l
 }

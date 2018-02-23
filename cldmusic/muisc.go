@@ -8,7 +8,7 @@ import (
 
 func Help() {
 	const (
-		stepOne = "what do you want to do (search/download/exit)? "
+		stepOne = "what do you want to do (search|s/download|d/exit|e)? "
 	)
 	var param string
 	reader := bufio.NewReader(os.Stdin)
@@ -18,19 +18,19 @@ exit:
 		data, _, _ := reader.ReadLine()
 		param = string(data)
 		switch param {
-		case "search":
-			fmt.Print("what type do you want to search(video/mv/song/exit)? ")
+		case "search", "s":
+			fmt.Print("what type do you want to search(video|v/mv|v/song|s/exit|e)? ")
 			data, _, _ = reader.ReadLine()
 			param = string(data)
 			var tp int
 			switch param {
-			case "video":
+			case "video", "v":
 				tp = VIDEO
-			case "mv":
+			case "mv", "m":
 				tp = MV_
-			case "song":
+			case "song", "s":
 				tp = SONG
-			case "exit":
+			case "exit", "e":
 				fmt.Println("exit ...")
 				break exit
 			default:
@@ -40,15 +40,15 @@ exit:
 			data, _, _ = reader.ReadLine()
 			param = string(data)
 			Search(param, tp)
-		case "download":
+		case "download", "d":
 			//fmt.Printf("please type in the id you want to download: ")
-			fmt.Print("what do you want to download(video/mv)?")
+			fmt.Print("what do you want to download(video|v/mv|m)?")
 			data, _, _ = reader.ReadLine()
 			param = string(data)
 			var tp int
-			if param == "video" {
+			if param == "video" || param == "v" {
 				tp = VIDEO_TYPE
-			} else if param == "mv" {
+			} else if param == "mv" || param == "m" {
 				tp = MV_TYPE
 			} else {
 				continue
@@ -61,7 +61,7 @@ exit:
 				continue
 			}
 			Download(param, tp)
-		case "exit":
+		case "exit", "e":
 			fmt.Println("exit ...")
 			break exit
 		default:

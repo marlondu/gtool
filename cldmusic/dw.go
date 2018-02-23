@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 
 	"strings"
 
@@ -14,7 +15,6 @@ import (
 	"io"
 
 	"github.com/marlondu/gtool/gsoup"
-	"qiniupkg.com/x/url.v7"
 )
 
 const (
@@ -56,7 +56,7 @@ func VideoInfo(id string, tp int) map[string]string {
 			name = strings.Replace(ia, "trackName=", "", -1)
 		}
 	}
-	uri, _ = url.Unescape(uri)
+	uri, _ = url.QueryUnescape(uri)
 	return map[string]string{
 		"name": name,
 		"url":  uri,

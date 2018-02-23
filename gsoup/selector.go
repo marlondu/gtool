@@ -72,7 +72,7 @@ func compile(root *Node, cssQuery string) (slct *Selection) {
 	slct.root = root
 	cssQuery = strings.TrimSpace(cssQuery)
 	tk := &TokenQueue{cssQuery: cssQuery, pos: 0}
-	fmt.Printf("cssQuery: %s, posotion: %d\n", cssQuery, tk.pos)
+	//fmt.Printf("cssQuery: %s, posotion: %d\n", cssQuery, tk.pos)
 	matcher := &AndMatcher{}
 	for !tk.isEmpty() {
 		if tk.matches("#") {

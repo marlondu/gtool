@@ -16,6 +16,7 @@ import (
 	"strconv"
 
 	"github.com/marlondu/gtool/dson"
+	"github.com/marlondu/gtool/ppretty"
 )
 
 /**
@@ -250,132 +251,34 @@ func UnPKCS5Padding(src []byte) []byte {
 
 func prettyPrintMV(list []MV) {
 	// 每列的最大长度
-	columnsWidth := []int{2, 4, 4}
-	data := make([][]string, 0)
-	title := []string{"ID", "名称", "歌手"}
-	data = append(data, title)
+	var tb [][]string
+	head := []string{"ID", "名称", "歌手"}
+	tb = append(tb, head)
 	for _, v := range list {
-		col := make([]string, 4)
-		col[0] = strconv.Itoa(v.Id)
-		col[1] = v.Name
-		col[2] = strings.Join(v.Artists, ",")
-		//col[3] = strconv.Itoa(v.Type)
-		data = append(data, col)
-		if strLen(col[0]) > columnsWidth[0] {
-			columnsWidth[0] = strLen(col[0]) + 2
-		}
-		if strLen(col[1]) > columnsWidth[1] {
-			columnsWidth[1] = strLen(col[1]) + 2
-		}
-		if strLen(col[2]) > columnsWidth[2] {
-			columnsWidth[2] = strLen(col[2]) + 2
-		}
-		//if strLen(col[3]) > columnsWidth[3] {
-		//	columnsWidth[3] = strLen(col[3]) + 2
-		//}
+		row := []string{strconv.Itoa(v.Id), v.Name, strings.Join(v.Artists, ",")}
+		tb = append(tb, row)
 	}
-	println(columnsWidth)
-	for i := 0; i < len(list); i++ {
-		printlnWithValue(columnsWidth, data[i])
-		println(columnsWidth)
-	}
+	ppretty.PrettyPrint(tb)
 }
 
 func prettyPrintVideo(list []Video) {
-	// 每列的最大长度
-	columnsWidth := []int{2, 4, 4, 4}
-	data := make([][]string, 0)
-	title := []string{"ID", "名称", "歌手", "类型"}
-	data = append(data, title)
+	var tb [][]string
+	head := []string{"ID", "名称", "歌手", "类型"}
+	tb = append(tb, head)
 	for _, v := range list {
-		col := make([]string, 4)
-		col[0] = v.Id
-		col[1] = v.Title
-		col[2] = strings.Join(v.Artists, ",")
-		col[3] = v.Type
-		data = append(data, col)
-		if strLen(col[0]) > columnsWidth[0] {
-			columnsWidth[0] = strLen(col[0]) + 2
-		}
-		if strLen(col[1]) > columnsWidth[1] {
-			columnsWidth[1] = strLen(col[1]) + 2
-		}
-		if strLen(col[2]) > columnsWidth[2] {
-			columnsWidth[2] = strLen(col[2]) + 2
-		}
-		if strLen(col[3]) > columnsWidth[3] {
-			columnsWidth[3] = strLen(col[3]) + 2
-		}
+		row := []string{v.Id, v.Title, strings.Join(v.Artists, ","), v.Type}
+		tb = append(tb, row)
 	}
-	println(columnsWidth)
-	for i := 0; i < len(list); i++ {
-		printlnWithValue(columnsWidth, data[i])
-		println(columnsWidth)
-	}
+	ppretty.PrettyPrint(tb)
 }
 
 func prettyPrintSong(list []Song) {
-	// 每列的最大长度
-	columnsWidth := []int{2, 4, 4, 4}
-	data := make([][]string, 0)
-	title := []string{"ID", "名称", "歌手", "专辑"}
-	data = append(data, title)
-	for _, v := range list {
-		col := make([]string, 4)
-		col[0] = strconv.Itoa(v.Id)
-		col[1] = v.Name
-		col[2] = strings.Join(v.Artists, ",")
-		col[3] = v.Album
-		data = append(data, col)
-		if strLen(col[0]) > columnsWidth[0] {
-			columnsWidth[0] = strLen(col[0]) + 2
-		}
-		if strLen(col[1]) > columnsWidth[1] {
-			columnsWidth[1] = strLen(col[1]) + 2
-		}
-		if strLen(col[2]) > columnsWidth[2] {
-			columnsWidth[2] = strLen(col[2]) + 2
-		}
-		if strLen(col[3]) > columnsWidth[3] {
-			columnsWidth[3] = strLen(col[3]) + 2
-		}
+	var tb [][]string
+	head := []string{"ID", "名称", "歌手", "专辑"}
+	tb = append(tb, head)
+	for _, s := range list {
+		var row = []string{strconv.Itoa(s.Id), s.Name, strings.Join(s.Artists, ","), s.Album}
+		tb = append(tb, row)
 	}
-	println(columnsWidth)
-	for i := 0; i < len(list); i++ {
-		printlnWithValue(columnsWidth, data[i])
-		println(columnsWidth)
-	}
-}
-
-func println(colsWidth []int) {
-	for i := 0; i < len(colsWidth); i++ {
-		fmt.Print("+")
-		for j := 0; j < colsWidth[i]; j++ {
-			fmt.Print("-")
-		}
-	}
-	fmt.Print("+\n")
-}
-
-func printlnWithValue(colsWidth []int, values []string) {
-	for i := 0; i < len(colsWidth); i++ {
-		fmt.Print("|")
-		valLen := strLen(values[i])
-		rightWhites := colsWidth[i] - valLen
-		fmt.Print(values[i])
-		fmt.Print(strings.Repeat(" ", rightWhites))
-	}
-	fmt.Print("|\n")
-}
-
-func strLen(s string) int {
-	l := 0
-	for _, c := range s {
-		if c < 0xFF {
-			l += 1
-		} else {
-			l += 2
-		}
-	}
-	return l
+	ppretty.PrettyPrint(tb)
 }

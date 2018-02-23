@@ -55,19 +55,20 @@ func printRow(row []string, colsWidth []int, align int) {
 	}
 	for i := 0; i < len(row); i++ {
 		fmt.Print("|")
+		valLen := strLen(row[i])
 		switch align {
 		case AlignLeft:
-			fmt.Print(row[i])
+			spaces := colsWidth[i] - valLen
+			val := row[i] + strings.Repeat(" ", spaces)
+			fmt.Print(val)
 		case AlignCenter:
-			valLen := strLen(row[i])
 			left := (colsWidth[i] - valLen) / 2
 			right := colsWidth[i] - valLen - left
 			val := strings.Repeat(" ", left) + row[i] + strings.Repeat(" ", right)
 			fmt.Print(val)
 		case AlignRight:
-			valLen := strLen(row[i])
 			spaces := colsWidth[i] - valLen
-			val := row[i] + strings.Repeat(" ", spaces)
+			val := strings.Repeat(" ", spaces) + row[i]
 			fmt.Print(val)
 		default:
 			log.Fatal("align parameter invalid")

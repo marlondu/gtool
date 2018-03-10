@@ -57,7 +57,7 @@ type Song struct {
 	Name    string   `json:"name"`
 	Id      int      `json:"id"`
 	Artists []string `json:"artists"`
-	Album   string   `album`
+	Album   string   `json:"album"`
 }
 
 func (s *Song) String() string {
@@ -200,8 +200,17 @@ func fetch(param string, uri string) (string, error) {
 		"params":    []string{paramsVal},
 		"encSecKey": []string{rsaKey()},
 	}
+	proxy := func(_ *http.Request) (*url.URL, error) {
+		return url.Parse("http://127.0.0.1:8888")
+	}
 
-	resp, err := http.PostForm(uri, params)
+	transport := &http.Transport{Proxy: proxy}
+	client := &http.Client{Transport: transport}
+	req, err := http.NewRequest("POST", uri, bytes.NewBufferString(params.Encode()))
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Referer", "http://music.163.com/mv?id=5363527")
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -222,7 +231,7 @@ func cloudEnc(src string) string {
 }
 
 func aesEncrypt(key []byte, src []byte) string {
-	iv := []byte("0102030405060708")
+	iv := []byte("0102030405060708") // 0102030405060708
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		log.Panic(err)

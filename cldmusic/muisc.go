@@ -8,7 +8,7 @@ import (
 
 func Help() {
 	const (
-		stepOne = "what do you want to do (search|s/download|d/exit|e)? "
+		stepOne = "请输入你要进行的操作(search|s/download|d/exit|e)? "
 	)
 	var param string
 	reader := bufio.NewReader(os.Stdin)
@@ -19,7 +19,7 @@ exit:
 		param = string(data)
 		switch param {
 		case "search", "s":
-			fmt.Print("what type do you want to search(video|v/mv|v/song|s/exit|e)? ")
+			fmt.Print("请输入要搜索的类型(video|v/mv|v/song|s/exit|e)? ")
 			data, _, _ = reader.ReadLine()
 			param = string(data)
 			var tp int
@@ -36,13 +36,13 @@ exit:
 			default:
 				continue
 			}
-			fmt.Print("please type in what you want to search: ")
+			fmt.Print("请输入要搜索的关键字: ")
 			data, _, _ = reader.ReadLine()
 			param = string(data)
 			Search(param, tp)
 		case "download", "d":
 			//fmt.Printf("please type in the id you want to download: ")
-			fmt.Print("what do you want to download(video|v/mv|m)?")
+			fmt.Print("请输入要下载的类型(video|v/mv|m)?")
 			data, _, _ = reader.ReadLine()
 			param = string(data)
 			var tp int
@@ -53,13 +53,13 @@ exit:
 			} else {
 				continue
 			}
-			fmt.Print("please input the id you want to download:")
+			fmt.Print("请输入要下载的ID:")
 			data, _, _ = reader.ReadLine()
-			param = string(data)
-			if len(param) == 0 {
-				fmt.Println("id can not be empty,please try it again.")
+			if data == nil || len(data) == 0 {
+				fmt.Println("ID不能为空，请重试.")
 				continue
 			}
+			param = string(data)
 			Download(param, tp)
 		case "exit", "e":
 			fmt.Println("exit ...")

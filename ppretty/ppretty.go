@@ -1,6 +1,7 @@
 package ppretty
 
 import (
+	"container/list"
 	"fmt"
 	"log"
 	"strings"
@@ -12,6 +13,36 @@ const (
 	AlignRight
 )
 
+type PrintTable struct {
+	ls *list.List
+}
+
+// Header add header to table
+func (pt *PrintTable) Header(row []string) {
+	pt.ls.PushFront(row)
+}
+
+func (pt *PrintTable) Append(row []string) {
+	pt.ls.PushBack(row)
+}
+
+func (pt *PrintTable) Print(align int) {
+	var tb [][]string
+	for e := pt.ls.Front(); e != nil; e = e.Next() {
+		val, ok := e.Value.([]string)
+		if ok {
+			tb = append(tb, val)
+		}
+		//pt.ls.Remove(e)
+	}
+	PrettyPrintAlign(tb, align)
+}
+
+func New() *PrintTable {
+	return &PrintTable{list.New()}
+}
+
+// PrettyPrint print table
 func PrettyPrint(tb [][]string) {
 	PrettyPrintAlign(tb, AlignCenter)
 }

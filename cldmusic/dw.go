@@ -71,14 +71,14 @@ func getMvInfo(resp string) videoInfo {
 			r = robj.GetInt("br")
 		}
 	}
-	info := videoInfo{
+	return videoInfo{
 		id:         data.GetString("id"),
 		name:       data.GetString("name"),
 		tp:         1,
 		resolution: r,
 	}
-	return info
 }
+
 func getVideoInfo(resp string) videoInfo {
 	jsObj := dson.ParseObject(resp)
 	data := jsObj.GetObject("data")
@@ -90,13 +90,12 @@ func getVideoInfo(resp string) videoInfo {
 			r = robj.GetInt("resolution")
 		}
 	}
-	info := videoInfo{
+	return videoInfo{
 		id:         data.GetString("vid"),
 		name:       data.GetString("title"),
 		tp:         1,
 		resolution: r,
 	}
-	return info
 }
 
 func FindVideoUrl(id string, resolution int, tp int) string {

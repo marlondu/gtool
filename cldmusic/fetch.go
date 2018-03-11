@@ -200,12 +200,13 @@ func fetch(param string, uri string) (string, error) {
 		"params":    []string{paramsVal},
 		"encSecKey": []string{rsaKey()},
 	}
-	proxy := func(_ *http.Request) (*url.URL, error) {
+	/*proxy := func(_ *http.Request) (*url.URL, error) {
 		return url.Parse("http://127.0.0.1:8888")
 	}
 
 	transport := &http.Transport{Proxy: proxy}
-	client := &http.Client{Transport: transport}
+	client := &http.Client{Transport: transport}*/
+	client := http.DefaultClient
 	req, err := http.NewRequest("POST", uri, bytes.NewBufferString(params.Encode()))
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
